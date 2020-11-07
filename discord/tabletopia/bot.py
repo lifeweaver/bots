@@ -22,6 +22,7 @@ bot = commands.Bot(command_prefix='\\', intents=discord.Intents(messages=True, g
 # command to look up tabletopia rules for last tabletopia room game
 # command to find a how to play youtube video for last tabletopia room game
 # command to pick random game that plays up to 5 by default
+# perhaps after getting the games look up ratings for the games.
 
 # look at history in the form of a list
 # messages = await channel.history().flatten()
@@ -67,7 +68,10 @@ async def random_number(ctx):
     await ctx.send(response)
 
 
-@bot.command(name='random_player', help='Responds with a random player in the general text chat', brief='Random player')
+@bot.command(
+    name='random_player', help='Responds with a random player in the general text chat', brief='Random player',
+    aliases=['rp', 'fp', 'pick', 'first_player', 'firstplayer', 'randomplayer']
+)
 async def random_player(ctx):
     members = []
     for member in discord.utils.get(ctx.guild.channels, name="general", type=ChannelType.text).members:
@@ -85,8 +89,6 @@ async def random_player(ctx):
 
 @bot.command(name='clear', help='Clear request and response to commands', brief='Clear command messages')
 async def clear_messages(ctx):
-    channel = discord.utils.get(ctx.guild.channels, name="general", type=ChannelType.text)
-
     def is_me(m):
         return m.author == bot.user
 
@@ -96,9 +98,14 @@ async def clear_messages(ctx):
         else:
             return False
 
-    bot_deleted = await channel.purge(limit=100, check=is_me)
-    deleted = await channel.purge(limit=100, check=is_command)
-    await channel.send('Deleted {} message(s)'.format(len(bot_deleted) + len(deleted)))
+    bot_deleted = await ctx.channel.purge(limit=100, check=is_me)
+    deleted = await ctx.channel.purge(limit=100, check=is_command)
+    await ctx.channel.send('Deleted {} message(s)'.format(len(bot_deleted) + len(deleted)))
+
+
+@bot.command()
+async def ping(ctx):
+    await ctx.send(f'Pong! {round(bot.latency * 1000)}ms')
 
 
 @bot.command(name='test', help='Used to test whatever I am currently working on', brief='test')
