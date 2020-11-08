@@ -21,8 +21,9 @@ bot = commands.Bot(command_prefix='\\', intents=discord.Intents(messages=True, g
 # TODO:
 # command to look up tabletopia rules for last tabletopia room game
 # command to find a how to play youtube video for last tabletopia room game
-# command to pick random game that plays up to 5 by default
 # perhaps after getting the games look up ratings for the games.
+# command/loop to follow game news site? - probably not
+# command ascii art?
 
 # look at history in the form of a list
 # messages = await channel.history().flatten()
@@ -30,11 +31,26 @@ bot = commands.Bot(command_prefix='\\', intents=discord.Intents(messages=True, g
 #     print(message)
 
 
+def cog_list():
+    cog_path = HOME + '/cogs'
+    cog_path = cog_path if os.path.exists(cog_path) else './cogs'
+    cogs = []
+    for filename in os.listdir(cog_path):
+        if filename.endswith('.py'):
+            cogs.append(filename[:-3])
+
+    return cogs
+
+
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to discord')
     # TODO: pick new icon for avatar
-    # HOME + '/avatars'
+    # https://gist.github.com/Gorialis/e89482310d74a90a946b44cf34009e88
+    # https://www.youtube.com/watch?v=RK8RzuUMYt8&list=PLW3GfRiBCHOhfVoiDZpSz8SM_HybXRPzZ&index=9
+    # for filename in os.listdir(HOME + '/avatars'):
+        # if filename.endswith('.png'):
+            # do something
 
 
 @bot.event
@@ -45,49 +61,42 @@ async def on_message(message):
     await bot.process_commands(message)
 
 
-@bot.command(name='quote', help='Responds with a random board game quote', brief='Board game quote')
-async def random_quote(ctx):
-    board_game_quotes = [
-        '"Bomb it, pave it, make a parking lot out of it!" -- Anon.',
-        '"The meek shall inherit the earth. The rest of us are going to the stars!" -- Anon.',
-        '"Nuke em till they glow, and shoot em in the dark!" -- Anon.',
-        '"Cards are war, in disguise of a sport." -- Charles Lamb',
-        '"Lose your first 50 games as quickly as possible." -- Go proverb',
-        '"If you\'re not prepared to lose every friend you have over a board game, you\'re not playing hard enough." '
-        '-- Anon.',
-        '"Never bored with a board game" -- Anon.',
-    ]
-
-    response = random.choice(board_game_quotes)
-    await ctx.send(response)
+@bot.command(brief='Load cog')
+@commands.is_owner()
+async def load(ctx, extension):
+    bot.load_extension(f'cogs.{extension}')
+    print(f'Extension {extension} loaded')
 
 
-@bot.command(name='random', help='Responds with a random number between 0 and 100', brief='Random number')
-async def random_number(ctx):
-    response = random.randrange(0, 100)
-    await ctx.send(response)
+@bot.command(brief='Unload cog')
+@commands.is_owner()
+async def unload(ctx, extension):
+    bot.unload_extension(f'cogs.{extension}')
+    print(f'Extension {extension} unloaded')
 
 
-@bot.command(
-    name='random_player', help='Responds with a random player in the general text chat', brief='Random player',
-    aliases=['rp', 'fp', 'pick', 'first_player', 'firstplayer', 'randomplayer']
-)
-async def random_player(ctx):
-    members = []
-    for member in discord.utils.get(ctx.guild.channels, name="general", type=ChannelType.text).members:
-        print(f'member: {member.name}, status: {member.status}, bot: {member.bot}')
-        # if not member.bot and member.status == Status.online:
-        if not member.bot:
-            members.append(member.name)
+@bot.command(brief='Reload cog')
+@commands.is_owner()
+async def reload(ctx, extension=''):
+    if extension:
+        bot.unload_extension(f'cogs.{extension}')
+        bot.load_extension(f'cogs.{extension}')
+        print(f'Extension {extension} reloaded')
+    else:
+        for this_cog in cog_list():
+            bot.unload_extension(f'cogs.{this_cog}')
+            bot.load_extension(f'cogs.{this_cog}')
+            print(f'Extension {this_cog} reloaded')
 
-    if len(members) < 1:
-        members.append('Nobody in channel?')
 
-    response = random.choice(members)
-    await ctx.send(response)
+@bot.command(brief='List cogs')
+@commands.is_owner()
+async def list_cogs(ctx):
+    await ctx.send(cog_list())
 
 
 @bot.command(name='clear', help='Clear request and response to commands', brief='Clear command messages')
+@commands.is_owner()
 async def clear_messages(ctx):
     def is_me(m):
         return m.author == bot.user
@@ -103,12 +112,8 @@ async def clear_messages(ctx):
     await ctx.channel.send('Deleted {} message(s)'.format(len(bot_deleted) + len(deleted)))
 
 
-@bot.command()
-async def ping(ctx):
-    await ctx.send(f'Pong! {round(bot.latency * 1000)}ms')
-
-
 @bot.command(name='test', help='Used to test whatever I am currently working on', brief='test')
+@commands.is_owner()
 async def test_command(ctx):
     members = []
     for member in discord.utils.get(ctx.guild.channels, name="General", type=ChannelType.voice).members:
@@ -117,5 +122,9 @@ async def test_command(ctx):
     print(f'members: {members}')
     # print(f'members: {discord.utils.get(ctx.guild.channels, name="General", type=ChannelType.voice).members}')
     # await ctx.send('see console')
+
+# Load all cogs
+for cog in cog_list():
+    bot.load_extension(f'cogs.{cog}')
 
 bot.run(TOKEN)
