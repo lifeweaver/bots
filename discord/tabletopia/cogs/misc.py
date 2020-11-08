@@ -1,4 +1,6 @@
 import random
+import requests
+import bs4
 import discord
 from discord import ChannelType
 from discord.ext import commands
@@ -8,10 +10,38 @@ class Misc(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    def test(self, message):
+        base_url = 'https://tabletopia.com'
+        room = f'{base_url}/playground/playgroundrooms/room?roomShortUrl={message.content[1:]}'
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0'
+        }
+        res = requests.get(f'{room}', headers=headers)
+        text = bs4.BeautifulSoup(res.text, 'html.parser')
+        if res.status_code != requests.codes.ok or not text.select("[title='Rules EN']"):
+            print(
+                f'Request response code was {res.status_code} for URL: {res.request.url}, or could not find '
+                'rules: ' + str(len(text.select("[title='Rules EN']")))
+            )
+            return 'Failed to find game'
+
+        return 'Rules: ' + text.select("[title='Rules EN']")[0].attrs['href']
+
+    # Events
     @commands.Cog.listener()
     async def on_ready(self):
         print('Misc is online')
 
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.content[0] == '#':
+            print('running on_message')
+            await message.channel.send(self.test(message))
+
+        # Uncomment if you don't have this line somewhere else on the bot
+        # await self.bot.process_commands(message)
+
+    # Commands
     @commands.command(name='quote', help='Responds with a random board game quote', brief='Board game quote')
     async def random_quote(self, ctx):
         board_game_quotes = [
@@ -54,6 +84,14 @@ class Misc(commands.Cog):
     @commands.command()
     async def ping(self, ctx):
         await ctx.send(f'Pong! {round(self.bot.latency * 1000)}ms')
+
+    @commands.command()
+    async def rules(self, ctx):
+        # look at history in the form of a list
+        messages = await ctx.channel.history().flatten()
+        message = next(message for message in messages if message.content[0] == '#')
+        print('running rules command')
+        await ctx.send(self.test(message))
 
 
 def setup(bot):

@@ -19,7 +19,6 @@ with open(HOME + '/package.json') as f:
 bot = commands.Bot(command_prefix='\\', intents=discord.Intents(messages=True, guilds=True, members=True))
 
 # TODO:
-# command to look up tabletopia rules for last tabletopia room game
 # command to find a how to play youtube video for last tabletopia room game
 # perhaps after getting the games look up ratings for the games.
 # command/loop to follow game news site? - probably not
