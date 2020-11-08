@@ -1,12 +1,13 @@
 import os
-import random
+import logging
 import json
 import discord
 from dotenv import load_dotenv
 from discord import ChannelType
 from discord.ext import commands
-load_dotenv()
 
+logging.basicConfig(level=logging.INFO)
+load_dotenv()
 HOME = os.getenv("DISCORD_BOT_HOME") + '/tabletopiaHelper'
 
 
@@ -19,15 +20,9 @@ with open(HOME + '/package.json') as f:
 bot = commands.Bot(command_prefix='\\', intents=discord.Intents(messages=True, guilds=True, members=True))
 
 # TODO:
-# command to find a how to play youtube video for last tabletopia room game
 # perhaps after getting the games look up ratings for the games.
 # command/loop to follow game news site? - probably not
 # command ascii art?
-
-# look at history in the form of a list
-# messages = await channel.history().flatten()
-# for message in messages:
-#     print(message)
 
 
 def cog_list():

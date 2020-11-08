@@ -10,7 +10,9 @@ class Misc(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def test(self, message):
+    # TODO: return title and dictionary with how to play youtube video if it exists
+    # as a backup search youtube?
+    def get_game_info(self, message):
         base_url = 'https://tabletopia.com'
         room = f'{base_url}/playground/playgroundrooms/room?roomShortUrl={message.content[1:]}'
         headers = {
@@ -36,7 +38,7 @@ class Misc(commands.Cog):
     async def on_message(self, message):
         if message.content[0] == '#':
             print('running on_message')
-            await message.channel.send(self.test(message))
+            await message.channel.send(self.get_game_info(message))
 
         # Uncomment if you don't have this line somewhere else on the bot
         # await self.bot.process_commands(message)
@@ -91,7 +93,7 @@ class Misc(commands.Cog):
         messages = await ctx.channel.history().flatten()
         message = next(message for message in messages if message.content[0] == '#')
         print('running rules command')
-        await ctx.send(self.test(message))
+        await ctx.send(self.get_game_info(message))
 
 
 def setup(bot):
