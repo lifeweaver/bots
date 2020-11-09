@@ -17,7 +17,8 @@ with open(HOME + '/auth.json') as f:
 with open(HOME + '/package.json') as f:
     PACKAGE = json.loads(f.read())
 
-bot = commands.Bot(command_prefix='\\', intents=discord.Intents(messages=True, guilds=True, members=True))
+intents = discord.Intents(messages=True, guilds=True, members=True, presences=True, voice_states=True)
+bot = commands.Bot(command_prefix='\\', intents=intents)
 
 # TODO:
 # perhaps after getting the games look up ratings for the games.
