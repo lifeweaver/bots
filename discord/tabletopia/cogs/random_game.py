@@ -7,7 +7,7 @@ from discord.ext import commands
 
 
 class RandomGame(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.base_url = 'https://tabletopia.com'
         self.game_details = []
@@ -17,7 +17,7 @@ class RandomGame(commands.Cog):
         print('Random game is online')
 
     @commands.command()
-    async def random_game(self, ctx, max_players=5):
+    async def random_game(self, ctx: commands.Context, max_players=5):
         res = requests.get(
             f'{self.base_url}/games?category=new-releases&minPlayersCount=1&maxPlayersCount={max_players}'
         )

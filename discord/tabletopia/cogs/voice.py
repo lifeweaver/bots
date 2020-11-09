@@ -15,7 +15,7 @@ class Voice(commands.Cog):
         print('Voice is online')
 
     @commands.command()
-    async def join(self, ctx):
+    async def join(self, ctx: commands.Context):
         voice = ctx.author.voice
         if voice:
             channel = voice.channel
@@ -29,7 +29,7 @@ class Voice(commands.Cog):
             print(f'Author not in a voice channel')
 
     @commands.command()
-    async def leave(self, ctx):
+    async def leave(self, ctx: commands.Context):
         if self.voice_channel:
             await self.voice_channel.disconnect()
         else:
@@ -43,9 +43,10 @@ class Voice(commands.Cog):
                     await channel.disconnect()
 
     @commands.command()
-    async def play(self, ctx, url: str):
+    async def play(self, ctx: commands.Context, url: str):
         voice_client: VoiceClient
         voice_client = ctx.author.voice
+        # discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
         # discord.FFmpegPCMAudio
         # voice_client.send_audio_packet()
         # voice_client.play()

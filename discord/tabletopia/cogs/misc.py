@@ -7,12 +7,12 @@ from discord.ext import commands
 
 
 class Misc(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     # TODO: return title and dictionary with how to play youtube video if it exists
     # as a backup search youtube?
-    def get_game_info(self, message):
+    def get_game_info(self, message: discord.Message):
         base_url = 'https://tabletopia.com'
         room = f'{base_url}/playground/playgroundrooms/room?roomShortUrl={message.content[1:]}'
         headers = {
@@ -35,7 +35,7 @@ class Misc(commands.Cog):
         print('Misc is online')
 
     @commands.Cog.listener()
-    async def on_message(self, message):
+    async def on_message(self, message: discord.Message):
         if message.content[0] == '#':
             print('running on_message')
             await message.channel.send(self.get_game_info(message))
@@ -45,7 +45,7 @@ class Misc(commands.Cog):
 
     # Commands
     @commands.command(name='quote', help='Responds with a random board game quote', brief='Board game quote')
-    async def random_quote(self, ctx):
+    async def random_quote(self, ctx: commands.Context):
         board_game_quotes = [
             '"Bomb it, pave it, make a parking lot out of it!" -- Anon.',
             '"The meek shall inherit the earth. The rest of us are going to the stars!" -- Anon.',
@@ -61,7 +61,7 @@ class Misc(commands.Cog):
         await ctx.send(response)
 
     @commands.command(name='random', help='Responds with a random number between 0 and 100', brief='Random number')
-    async def random_number(self, ctx):
+    async def random_number(self, ctx: commands.Context):
         response = random.randrange(0, 100)
         await ctx.send(response)
 
@@ -69,7 +69,7 @@ class Misc(commands.Cog):
         name='random_player', help='Responds with a random player in the general text chat', brief='Random player',
         aliases=['rp', 'fp', 'pick', 'first_player', 'firstplayer', 'randomplayer']
     )
-    async def random_player(self, ctx):
+    async def random_player(self, ctx: commands.Context):
         members = []
         for member in discord.utils.get(ctx.guild.channels, name="general", type=ChannelType.text).members:
             print(f'member: {member.name}, status: {member.status}, bot: {member.bot}')
@@ -84,11 +84,11 @@ class Misc(commands.Cog):
         await ctx.send(response)
 
     @commands.command()
-    async def ping(self, ctx):
+    async def ping(self, ctx: commands.Context):
         await ctx.send(f'Pong! {round(self.bot.latency * 1000)}ms')
 
     @commands.command()
-    async def rules(self, ctx):
+    async def rules(self, ctx: commands.Context):
         # look at history in the form of a list
         messages = await ctx.channel.history().flatten()
         message = next(message for message in messages if message.content[0] == '#')

@@ -49,7 +49,7 @@ async def on_ready():
 
 
 @bot.event
-async def on_message(message):
+async def on_message(message: discord.Message):
     if message.content == "hello":
         await message.channel.send('Hello to you')
 
@@ -58,21 +58,21 @@ async def on_message(message):
 
 @bot.command(brief='Load cog')
 @commands.is_owner()
-async def load(ctx, extension):
+async def load(ctx: commands.Context, extension):
     bot.load_extension(f'cogs.{extension}')
     print(f'Extension {extension} loaded')
 
 
 @bot.command(brief='Unload cog')
 @commands.is_owner()
-async def unload(ctx, extension):
+async def unload(ctx: commands.Context, extension):
     bot.unload_extension(f'cogs.{extension}')
     print(f'Extension {extension} unloaded')
 
 
 @bot.command(brief='Reload cog')
 @commands.is_owner()
-async def reload(ctx, extension=''):
+async def reload(ctx: commands.Context, extension=''):
     if extension:
         bot.unload_extension(f'cogs.{extension}')
         bot.load_extension(f'cogs.{extension}')
@@ -86,13 +86,13 @@ async def reload(ctx, extension=''):
 
 @bot.command(brief='List cogs')
 @commands.is_owner()
-async def list_cogs(ctx):
-    await ctx.send(cog_list())
+async def list_cogs(ctx: commands.Context):
+    await ctx.send('\n'.join(cog_list()))
 
 
 @bot.command(name='clear', help='Clear request and response to commands', brief='Clear command messages')
 @commands.is_owner()
-async def clear_messages(ctx):
+async def clear_messages(ctx: commands.Context):
     def is_me(m):
         return m.author == bot.user
 
@@ -109,7 +109,7 @@ async def clear_messages(ctx):
 
 @bot.command(name='test', help='Used to test whatever I am currently working on', brief='test')
 @commands.is_owner()
-async def test_command(ctx):
+async def test_command(ctx: commands.Context):
     members = []
     for member in discord.utils.get(ctx.guild.channels, name="General", type=ChannelType.voice).members:
         members.append(member.name)
