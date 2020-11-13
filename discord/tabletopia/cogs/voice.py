@@ -85,6 +85,7 @@ class Voice(commands.Cog):
             'outtmpl': f'{MP3_LOCATION}/%(title)s.%(ext)s',
             'noplaylist': True,
             'continue_dl': True,
+            'quiet': True,  # remove this if you need the youtube_dl console output
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'mp3',
