@@ -1,10 +1,12 @@
 import random
-from ..util import utils
+import sys
+from util import utils
 import requests
 import bs4
 import discord
 from discord import ChannelType
 from discord.ext import commands
+sys.path.append('..')
 
 
 class Misc(commands.Cog):

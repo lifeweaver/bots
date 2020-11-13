@@ -1,8 +1,11 @@
-from ..util import utils
+import sys
+import time
+from util import utils
 import random
 import requests
 import bs4
 from discord.ext import commands
+sys.path.append('..')
 
 
 class RandomGame(commands.Cog):

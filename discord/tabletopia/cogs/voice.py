@@ -1,11 +1,13 @@
 import os
-from ..util import utils
+import sys
+from util import utils
 import time
 import youtube_dl
 import discord
 from discord.ext import commands
 from discord import VoiceChannel, VoiceClient
 from discord import ChannelType
+sys.path.append('..')
 
 HOME = os.getenv("DISCORD_BOT_HOME") + '/tabletopiaHelper'
 MP3_LOCATION = f'{HOME}/mp3'
@@ -19,6 +21,8 @@ class Voice(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.voice_channel = None
+        if not os.path.isdir(MP3_LOCATION):
+            os.mkdir(MP3_LOCATION)
 
     @commands.Cog.listener()
     async def on_ready(self):

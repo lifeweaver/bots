@@ -1,5 +1,4 @@
 import os
-from .util import utils
 import logging
 import json
 import discord
@@ -60,7 +59,6 @@ async def on_message(message: discord.Message):
 @bot.command(brief='Load cog')
 @commands.is_owner()
 async def load(ctx: commands.Context, extension):
-    await utils.delete_message(ctx)
     bot.load_extension(f'cogs.{extension}')
     print(f'Extension {extension} loaded')
 
@@ -68,7 +66,6 @@ async def load(ctx: commands.Context, extension):
 @bot.command(brief='Unload cog')
 @commands.is_owner()
 async def unload(ctx: commands.Context, extension):
-    await utils.delete_message(ctx)
     bot.unload_extension(f'cogs.{extension}')
     print(f'Extension {extension} unloaded')
 
@@ -76,7 +73,6 @@ async def unload(ctx: commands.Context, extension):
 @bot.command(brief='Reload cog')
 @commands.is_owner()
 async def reload(ctx: commands.Context, extension=''):
-    await utils.delete_message(ctx)
     if extension:
         bot.unload_extension(f'cogs.{extension}')
         bot.load_extension(f'cogs.{extension}')
@@ -91,14 +87,12 @@ async def reload(ctx: commands.Context, extension=''):
 @bot.command(brief='List cogs')
 @commands.is_owner()
 async def list_cogs(ctx: commands.Context):
-    await utils.delete_message(ctx)
     await ctx.send('\n'.join(cog_list()))
 
 
 @bot.command(name='clear', help='Clear request and response to commands', brief='Clear command messages')
 @commands.is_owner()
 async def clear_messages(ctx: commands.Context):
-    await utils.delete_message(ctx)
 
     def is_me(m):
         return m.author == bot.user
