@@ -1,8 +1,7 @@
-import time
+from ..util import utils
 import random
 import requests
 import bs4
-import discord
 from discord.ext import commands
 
 
@@ -18,6 +17,8 @@ class RandomGame(commands.Cog):
 
     @commands.command()
     async def random_game(self, ctx: commands.Context, max_players=5):
+        await utils.delete_message(ctx)
+        await ctx.send('Finding random game...')
         res = requests.get(
             f'{self.base_url}/games?category=new-releases&minPlayersCount=1&maxPlayersCount={max_players}'
         )

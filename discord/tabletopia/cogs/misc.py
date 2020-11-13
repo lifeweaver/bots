@@ -1,4 +1,5 @@
 import random
+from ..util import utils
 import requests
 import bs4
 import discord
@@ -14,20 +15,21 @@ class Misc(commands.Cog):
     # as a backup search youtube?
     def get_game_info(self, message: discord.Message):
         base_url = 'https://tabletopia.com'
+        selector = "._en-flag.game-rules"
         room = f'{base_url}/playground/playgroundrooms/room?roomShortUrl={message.content[1:]}'
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0'
         }
         res = requests.get(f'{room}', headers=headers)
         text = bs4.BeautifulSoup(res.text, 'html.parser')
-        if res.status_code != requests.codes.ok or not text.select("[title='Rules EN']"):
+        if res.status_code != requests.codes.ok or not text.select(selector):
             print(
                 f'Request response code was {res.status_code} for URL: {res.request.url}, or could not find '
-                'rules: ' + str(len(text.select("[title='Rules EN']")))
+                'rules: ' + str(len(text.select(selector)))
             )
             return 'Failed to find game'
 
-        return 'Rules: ' + text.select("[title='Rules EN']")[0].attrs['href']
+        return 'Rules: ' + text.select(selector)[0].attrs['href']
 
     # Events
     @commands.Cog.listener()
@@ -46,6 +48,7 @@ class Misc(commands.Cog):
     # Commands
     @commands.command(name='quote', help='Responds with a random board game quote', brief='Board game quote')
     async def random_quote(self, ctx: commands.Context):
+        await utils.delete_message(ctx)
         board_game_quotes = [
             '"Bomb it, pave it, make a parking lot out of it!" -- Anon.',
             '"The meek shall inherit the earth. The rest of us are going to the stars!" -- Anon.',
@@ -62,6 +65,7 @@ class Misc(commands.Cog):
 
     @commands.command(name='random', help='Responds with a random number between 0 and 100', brief='Random number')
     async def random_number(self, ctx: commands.Context):
+        await utils.delete_message(ctx)
         response = random.randrange(0, 100)
         await ctx.send(response)
 
@@ -70,6 +74,7 @@ class Misc(commands.Cog):
         aliases=['rp', 'fp', 'pick', 'first_player', 'firstplayer', 'randomplayer']
     )
     async def random_player(self, ctx: commands.Context):
+        await utils.delete_message(ctx)
         members = []
         for member in discord.utils.get(ctx.guild.channels, name="general", type=ChannelType.text).members:
             print(f'member: {member.name}, status: {member.status}, bot: {member.bot}')
@@ -85,10 +90,12 @@ class Misc(commands.Cog):
 
     @commands.command()
     async def ping(self, ctx: commands.Context):
+        await utils.delete_message(ctx)
         await ctx.send(f'Pong! {round(self.bot.latency * 1000)}ms')
 
     @commands.command()
     async def rules(self, ctx: commands.Context):
+        await utils.delete_message(ctx)
         # look at history in the form of a list
         messages = await ctx.channel.history().flatten()
         message = next(message for message in messages if message.content[0] == '#')
