@@ -1,10 +1,12 @@
 import os
+import glob
+import random
 import logging
 import json
 import discord
 from dotenv import load_dotenv
 from discord import ChannelType
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 logging.basicConfig(level=logging.INFO)
 load_dotenv()
@@ -40,12 +42,24 @@ def cog_list():
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to discord')
-    # TODO: pick new icon for avatar
-    # https://gist.github.com/Gorialis/e89482310d74a90a946b44cf34009e88
-    # https://www.youtube.com/watch?v=RK8RzuUMYt8&list=PLW3GfRiBCHOhfVoiDZpSz8SM_HybXRPzZ&index=9
-    # for filename in os.listdir(HOME + '/avatars'):
-        # if filename.endswith('.png'):
-            # do something
+    rotate_avatar.start()
+
+
+@tasks.loop(minutes=30.0)
+async def rotate_avatar():
+    avatar_dir = HOME + '/avatars'
+    avatar_list = glob.glob(avatar_dir + '/*.png')
+    if len(avatar_list) > 0:
+        chosen_avatar = random.choice(avatar_list)
+
+        with open(chosen_avatar, 'rb') as image_f:
+            image = image_f.read()
+
+        print(f'Avatar chosen: {chosen_avatar}')
+        await bot.user.edit(avatar=image)
+    else:
+        print(f'Avatar list empty: {avatar_dir}')
+        rotate_avatar.stop()
 
 
 @bot.event
