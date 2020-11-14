@@ -1,1 +1,7 @@
 placeholder
+
+dependencies:
+python.exe -m pip install -U youtube_dl
+python.exe -m pip install -U bs4
+python.exe -m pip install -U requests
+python.exe -m pip install -U discord.py
