@@ -6,3 +6,4 @@ python.exe -m pip install -U bs4
 python.exe -m pip install -U requests
 python.exe -m pip install -U discord
 python.exe -m pip install -U python-dotenv
+python.exe -m pip install -U PyNaCl
